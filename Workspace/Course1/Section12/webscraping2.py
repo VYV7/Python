@@ -4,7 +4,7 @@ import requests
 import bs4			# Beautiful Soup 4
 
 print("1--------------------------------")
-res = requests.get("http://freshsereneglowinglight.neverssl.com/online")
+res = requests.get("https://en.wikipedia.org/wiki/Room_641A")
 soup = bs4.BeautifulSoup(res.text, "lxml")
 print(soup)
 
@@ -15,11 +15,14 @@ print("2--------------------------------")
 # https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-beautiful-soup
 
 
-TagList = soup.select("a")
+TagList = soup.select(".mw-headline")
 print(TagList)
+
+print("\n")
 
 for item in TagList:
 	print(item.text)
+	
 
 
 
