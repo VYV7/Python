@@ -1,11 +1,10 @@
 print("========================================================================")
-import certifi
 import requests
 import bs4			# Beautiful Soup 4
 
 print("1--------------------------------")
 # send the request
-res = requests.get("https://en.wikipedia.org/wiki/Room_641A")
+res = requests.get("https://en.wikipedia.org/wiki/Cicada_3301")
 soup = bs4.BeautifulSoup(res.text, "lxml")
 print(soup)
 
@@ -22,17 +21,27 @@ print("2--------------------------------")
 # soup.select("div > span`")    elements named span directly under div
 
 
-TagList = soup.select(".mw-headline")
-print(TagList)
+image_info = soup.select(".thumbimage")
+print(image_info)
 
 print("\n")
 
-for item in TagList:
-	print(item.text)
+circada = image_info[0]
+print(circada)
+
+image_link = circada["src"]
+print(image_link)
+
+circada_image = requests.get(("http:" + image_link), "lxml")
+#print(circada_image.content)
 	
+# create a jpg file  
+f = open("circada_image_new.jpg", "wb")
+# store the image in that file
+f.write(circada_image.content)
+f.close()
 
-
-
+f.open()
 
 
 
