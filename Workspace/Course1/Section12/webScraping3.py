@@ -41,19 +41,6 @@ f = open("circada_image_new.jpg", "wb")
 f.write(circada_image.content)
 f.close()
 
-f.open()
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 print("========================================================================")
