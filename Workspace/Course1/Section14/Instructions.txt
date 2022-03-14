@@ -1,0 +1,9 @@
+Instructions for the download_link.csv file.
+
+If you are reading this, then you were able to find the appropriate links in the zipped file of lorem ipsum text. There were two links, one of them led to this document of instructions, another to a csv file called download_link.csv.
+
+The next step is in the csv file , obfuscated by random data in its rows and columns. The next link can be found by concatenating all the characters of the third column of the csv file.
+
+That will give you a link to a PDF file. There is an email address hidden somewhere in that document. Find the email address and send an email to it. You should receive a reply with further instructions.
+
+Best of luck.

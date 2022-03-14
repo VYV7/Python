@@ -12,7 +12,8 @@ print("1--------------------------------")
 
 print("2--------------------------------")
 # search files for "https:"
-myPath = 'C:\\Users\\Peter\\Documents\\Python\\Workspace\\Course1\\Section13\\ORANGEmission\\extractedInfo'
+#myPath = 'C:\\Users\\Peter\\Documents\\Python\\Workspace\\Course1\\Section13\\ORANGEmission\\extractedInfo'
+myPath = 'C:\\Users\\nxf33232\\OneDrive - NXP\\Documents\\Python\\Workspace\\Course1\\Section13\\ORANGEmission\\extractedInfo'
 results = []
 
 for folder, subfolders, files in os.walk(myPath):
