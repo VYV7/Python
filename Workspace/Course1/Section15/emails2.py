@@ -24,33 +24,35 @@ response = m.login(email, password)
 print(response)
 
 print(m.list())
+
 response = m.select("inbox")
 print(response)
 
 print("\n2--------------------------------")
 # finding an email
-#typ, data = m.search(None, "BEFORE 18-Mar-2022")
-typ, data = m.search(None, "SUBJECT 'Test email'")
-print(typ, " ", data)
+#typ, msgNums = m.search(None, "BEFORE 18-Mar-2022")
+typ, msgNums = m.search(None, '(SUBJECT "Test email")')
+print(typ, " ", msgNums)
 
-emailID = data[0]
-response, emailData = m.fetch(emailID, "RFC822")
-print(emailData)
+emailID = msgNums[0]
+print("Email ID:\n", emailID)
+response, emailData = m.fetch(emailID, "(RFC822)")
+print("Email data:\n", emailData)
 
 rawEmail = emailData[0][1]
 rawEmailString = rawEmail.decode("utf-8")
 
 
 import email
-emailMsg = email.message_from_string(raw_email_string)
-print(emailMsg)
+emailMsg = email.message_from_string(rawEmailString)
+print("Email msg:\n", emailMsg)
 
 for part in emailMsg.walk():
-	print(part.get_content_type())
+	print("Email contents:\n", part.get_content_type())
 
 	if part.get_content_type() == "text/plain":		# "text/html" if a link is expected
 		body = part.get_payload(decode=True)
-		print(body)
+		print("Email body:\n", body)
 	
 
 m.logout()
