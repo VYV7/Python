@@ -1,0 +1,10 @@
+As a quick note, you now need to provide a payment card information to use the free google api for maps. You get $200 of free credit per month, which is much much more than we use for this course. In case you don't have access to a debit/credit card, an alternative is to use the folium library:
+
+The code for this (assuming you have a  list of latitudes and longitudes) would be:
+
+import folium
+hello2 = folium.Map()
+fghello = folium.FeatureGroup()
+for lat, lon in zip(lats, lons):
+      fghello.add_child(folium.CircleMarker(location = [lat,lon], fill = True))
+hello2.add_child(fghello)
