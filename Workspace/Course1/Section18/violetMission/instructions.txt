@@ -1,0 +1,10 @@
+This link is lead from the first encrypted message. The key to that encryption was the largest known Fermat Prime --- 65537.
+
+Here is the link to the truth:
+
+b'gAAAAABaUXStIpjRWJTrbWGOB45IyRpbb8Zyl1sdktcSeOL0zpH-_Oxd2nXVjeph_fGybthCci75lTd0z5SycthFo-5uoFxZqeBTdDc_n9uq3FdZk75gYFAWIRSGlAqlBQlcqkNhVx3W3w7rTaCAhCrHijeyTtxq53S3ab6fLHUw3KPHx2LtdurISe5ArhrmG9IOepnzGzBBTaTgCfoAmbITCWbp_5cdQQ=='
+
+
+The decryption key is a 5 letter word in all caps passed through the SHA3_256 bit hash. You can find the word using this data:
+
+https://drive.google.com/file/d/1eEakUEGiEsG0SR2UqPp0yPjsRk5PKFXo/view?usp=sharing

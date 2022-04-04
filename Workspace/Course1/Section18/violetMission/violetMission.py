@@ -21,7 +21,7 @@ print("\nNumber of points: ", len(latLong))
 
 
 print("\n3--------------------------------")
-print("convert into lists of floats\n")
+print("convert into a list of floats\n")
 
 # go through all points and extract lats and longs
 patternLat = 	"\-?\d{1,3}.?\d{1,5}"
@@ -40,14 +40,29 @@ for idx, point in enumerate(latLong):
 	print(coordinates[idx])
 	
 
+print("\n4--------------------------------")
+print("create a map object")
 
+# folium
+# https://python-visualization.github.io/folium/quickstart.html
+# pip install folium
+import folium
 
+map = folium.Map()				# create a map object
+mapfg = folium.FeatureGroup()	# create a feature group layer
 
+for lat, long in coordinates:
+	#print("Coordinates: ", lat, ", ", long)
+	mapfg.add_child(folium.CircleMarker(location = [lat, long], fill = True))
 
+map.add_child(mapfg)
 
+map.save("map.html")
 
+print("display maps with points on it")
 
-
+import webbrowser
+webbrowser.open("map.html")
 
 
 print("========================================================================")
