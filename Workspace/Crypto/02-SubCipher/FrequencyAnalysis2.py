@@ -122,6 +122,8 @@ def decrypt(key, cipher):
 # we know average frequency of letter
 
 attack = Attack()
+
+# use stsstistics to figure out at least some of the letters
 attack.calculate_freq(cipher)
 attack.print_freq()		
 attack.calc_matches()
@@ -159,18 +161,5 @@ for line in range(0, len(messageLines)):
 	print("P: ", messageLines[line])
 	print("C: ", cipherLines[line])
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 print("###############################################################################")
