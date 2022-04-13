@@ -21,6 +21,8 @@ print("implementation of stream cipher")
 # starting with the same seed you always get the same sequence
 # https://en.wikipedia.org/wiki/Linear_congruential_generator
 
+import random
+
 class keyStream:
 	def __init__(self, key=1):
 		self.next = key
@@ -36,10 +38,21 @@ class keyStream:
 		return self.rand() % 256
 		
 		
-		
+#----------------------------------------------------------		
 def encrypt(key, message):
 	# XOR all message bytes with a stream of random bytes
 	return bytes([message[i] ^ key.getKeyByte() for i in range(len(message))])
+	
+#----------------------------------------------------------	
+# simulation of transmition with losses (replacing random bytes in the cipher)
+def transmit(cipher, likely):
+	b = []
+	for c in cipher:
+		if random.randrange(0, likely) == 0:
+			print("-- Transmission: changing cipher byte --")
+			c = c ^ 2**random.randrange(0, 7)
+		b.append(c)
+	return bytes(b)
 		
 ###############################################################################
 
@@ -50,9 +63,13 @@ cipher = encrypt(key, message)
 print("Cipher:\n", cipher)
 
 
+cipher = transmit(cipher, 7)
+print("Changed cipher:\n", cipher)
+
+
 key = keyStream()
-encMsg = encrypt(key, cipher)
-print("Decrypted message:\n", message)
+decMsg = encrypt(key, cipher)
+print("Decrypted message:\n", decMsg)
 
  
 
