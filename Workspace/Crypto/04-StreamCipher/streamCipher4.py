@@ -8,11 +8,11 @@ print("#########################################################################
 # - RC4 (WEP, SSL) - 40-2048 bits
 # (algorithms kept secret)
 # Challenges:
-# - authenticity - MAC		<--
-# - reuse key
+# - authenticity - MAC		
+# - reuse key				<--
 # - low entropy
 print("1----------------------------------------------------")
-print("implementation of stream cipher")
+print("Stream cipher - key re-use exploitation")
 # the key cannot be true random because 
 # the receiver must be able to regenerate it on their side
 
@@ -35,7 +35,8 @@ class keyStream:
 		
 	def getKeyByte(self):
 		# return a value between 0 and 255
-		return self.rand() % 256
+		self.current = self.rand() % 256
+		return self.current
 		
 		
 #----------------------------------------------------------		
@@ -71,43 +72,78 @@ def transmit(cipher, likely):
 # verify - new cipher xor key:		11111010b (new cipher)
 #							0xAA	10101010b (key)
 #								xor 01010000b (0x50 = P)
-
 def mod(cipher):
 	newCipher = [0]*len(cipher)				# create a list of the cipher's length
 	# change some of the characters in the message
 	newCipher[11] = ord("1") ^ ord("7")		# ord() takes a character and returns  its encoding
-	
 	return bytes([newCipher[i] ^ cipher[i] for i in range(len(cipher))])
+	
+#----------------------------------------------------------	
+# the key can be extracted by xoring the message and the cipher	
+def getKey(message, cipher):
+	return bytes([message[i] ^ cipher[i] for i in range(len(cipher))])
+	
+	
+#----------------------------------------------------------	
+def crack(keyStream, cipher):
+	length = min(len(keyStream), len(cipher))
+	return bytes([keyStream[i] ^ cipher[i] for i in range(length)])
 	
 		
 ###############################################################################
-# authenticity - MAC
 
-# Alice
+# Eve goes to Alice and tells her a secret
+evesMsg = "Eve: This is my secret".encode()
+
+# Alice - sends the message
+message = evesMsg
+print("\nAlice - message 1:\n", message)
+
 key = keyStream(10)							# Alice's key
-message = "Send Bob: $10".encode()		# convert into byte object
-print("\nOrigianl message:\n", message)
-
 cipher = encrypt(key, message)				# Alice encrypts the message
-print("\nCipher:\n", cipher)
+print("Alice - cipher 1:\n", cipher)
 
-# stream cipher does not provide authenticity (digital signature)!
-# the receiving end does not know if the message 
-# has been sent by the trusted sender
 
-# Bob amends the original message
-print("\nBob sees only the cipher:\n", cipher)
-cipher = mod(cipher)						# Bob modifyies the cipher
+# Eve *********************************
+evesKey = getKey(evesMsg, cipher)
+print("\n\nEve's derived thr key from her message and the cipher:\n", evesKey)
 
-# Bank
+
+# Bob - receives the message (he's got the same key)
 key = keyStream(10)
 decMsg = encrypt(key, cipher)
-print("\nBank (decrypted message):\n", decMsg)
+print("\n\nBob - decrypted message:\n", decMsg)
+
+
+print("\n\n--- Then Alice sends another message to Bob ---")
 
  
+# Alice - sends a new message
+message = "I love you Bob".encode()
+print("\n\nAlice - message 2:\n", message)
+
+key = keyStream(10)
+cipher = encrypt(key, message)
+print("Alice - cipher 2:\n", cipher)
 
 
+# Eve *********************************
+crackedMsg = crack(evesKey, cipher)
+print("\n\nEve - cracked message:\n", crackedMsg)
 
+
+# Bob - receives the new message
+key = keyStream(10)
+decMsg = encrypt(key, cipher)
+print("\n\nBob - decrypted message:\n", decMsg)
+
+
+# Eve extracted the key from the firs message
+# because she new the plaintext (original message)
+# this is why reusing the key is a weakness of stream cipher.
+
+# if someone trickes you to encrypt message that they know
+# then they will be able to get the key
 
 
 
