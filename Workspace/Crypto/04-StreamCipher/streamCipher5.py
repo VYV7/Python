@@ -12,7 +12,7 @@ print("#########################################################################
 # - reuse key				<--
 # - low entropy
 print("1----------------------------------------------------")
-print("Stream cipher - low entropy exploitation")
+print("Stream cipher - low entropy exploitation\n\n")
 
 # the key cannot be true random because 
 # the receiver must be able to regenerate it on their side
@@ -26,18 +26,27 @@ import random
 
 class keyStream:
 	def __init__(self, key=1):
-		self.next = key
+		self.next = key			# this is the seed
 		
 	def rand(self):
 		# formula implementation - returns a cipher
 		# a = 1103515245, Xn = self.next , c = 12345
 		self.next = (1103515245 * self.next + 12345) % 2**31
-		return self.next
+		return self.next					# return a 32 bit integer
 		
 	def getKeyByte(self):
-		# return a value between 0 and 255
-		self.current = self.rand() % 256
-		return self.current
+		# get a random number and
+		# convert it into a value between 0 and 255
+		#return self.rand() % 256			# return the LEAST significant byte
+		
+		# get a random number and
+		# convert it into a value between 0 and 255
+		# return self.rand() % (2**31)		# return a 32 bit integer
+		
+		# // is floor division, returns div result without fraction
+		# take the top byte, shift it right by 3 bytes ???
+		return (self.rand() // 2**23) % 256	# return the MOST significant byte		
+
 		
 		
 #----------------------------------------------------------		
@@ -90,6 +99,29 @@ def crack(keyStream, cipher):
 	length = min(len(keyStream), len(cipher))
 	return bytes([keyStream[i] ^ cipher[i] for i in range(length)])
 	
+	
+#----------------------------------------------------------	
+# goes through all possible key values until it gets t right
+def bruteForce(plaintext, cipher):
+	matchCnt = 0
+	# scan all possible keys
+	for key in range(2 **31):
+		bfKey = keyStream(key)						# generate a key
+		# xor plaintext with cipher to get a key
+		for j in range(0, len(plaintext)):
+			xorVal = plaintext[j] ^ cipher[j]		# calc Key based on plaintext XOR cipher
+			if xorVal != bfKey.getKeyByte():		# check if the guessed key alignes with the calc key
+				break
+		else:
+			#matchCnt += 1
+			#if matchCnt == 3:
+			return key
+	return False
+		
+		
+		
+		
+	
 		
 ###############################################################################
 
@@ -99,59 +131,54 @@ def crack(keyStream, cipher):
 # A lack of good entropy can leave a cryptosystem vulnerable 
 # and unable to encrypt data securely
 
+# Stream Cipher uses the linear congruential generator
 
-# Eve goes to Alice and tells her a secret
-evesMsg = "Eve: This is my secret".encode()
+
+
+
 
 # Alice - sends the message
-message = evesMsg
-print("\nAlice - message 1:\n", message)
+# secretKey = 10
+secretKey = random.randrange(0, 2**20)
+print("Secret key:\n", secretKey)
+key = keyStream(secretKey)					# Alice's key
 
-key = keyStream(10)							# Alice's key
+# usually messages have a defined structure.
+# header is one part of the structure.
+header = "MESSAGE: "
+
+message = "MESSAGE: " + "My secret message to Bob"
+message = message.encode()
+print("\nMessage:\n", message)
+
 cipher = encrypt(key, message)				# Alice encrypts the message
-print("Alice - cipher 1:\n", cipher)
-
-
-# Eve *********************************
-evesKey = getKey(evesMsg, cipher)
-print("\n\nEve's derived thr key from her message and the cipher:\n", evesKey)
+print("\nAlice - cipher 1:\n", cipher)
 
 
 # Bob - receives the message (he's got the same key)
-key = keyStream(10)
+key = keyStream(secretKey)
 decMsg = encrypt(key, cipher)
-print("\n\nBob - decrypted message:\n", decMsg)
-
-
-print("\n\n--- Then Alice sends another message to Bob ---")
-
- 
-# Alice - sends a new message
-message = "I love you Bob".encode()
-print("\n\nAlice - message 2:\n", message)
-
-key = keyStream(10)
-cipher = encrypt(key, message)
-print("Alice - cipher 2:\n", cipher)
+print("\n Bob: decrypted message:\n", decMsg)
 
 
 # Eve *********************************
-crackedMsg = crack(evesKey, cipher)
-print("\n\nEve - cracked message:\n", crackedMsg)
+bfKey = bruteForce(header.encode(), cipher)		# header is the part of plaintext that Eve knows
+print("\nEve's brute force key:\n", bfKey)	
+
+key = keyStream(bfKey)
+decMsg2 = encrypt(key, cipher)
+print("Eve: decrypter message:\n", decMsg2)
 
 
-# Bob - receives the new message
-key = keyStream(10)
-decMsg = encrypt(key, cipher)
-print("\n\nBob - decrypted message:\n", decMsg)
 
 
-# Eve extracted the key from the firs message
-# because she new the plaintext (original message)
-# this is why reusing the key is a weakness of stream cipher.
 
-# if someone trickes you to encrypt message that they know
-# then they will be able to get the key
+
+
+
+
+
+
 
 
 
