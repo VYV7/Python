@@ -7,20 +7,25 @@
 from pyDes import *
 
 # #############################################################################
+# changine 1 bit in a block destroys the message in ECB mode
 def modify(cipher):
     mod = [0] * len(cipher)
-    mod[10] = ord(" ") ^ ord("1")
-    mod[11] = ord(" ") ^ ord("0")
-    mod[10] = ord("1") ^ ord("0")
+    #mod[10] = ord(" ") ^ ord("1")
+    #mod[11] = ord(" ") ^ ord("0")
+    #mod[10] = ord("1") ^ ord("0")
+    mod[8] = ord("G") ^ ord("T")
     return bytes(mod[i] ^ cipher[i] for i in range(len(cipher)))
 
 # #############################################################################
 
 
-message = "Give Bob:  10$"
+#message = "Give Bob:  10$ and send them to him"
+message = "0123456789ABCDEF0123456789ABCDEF"
 key = "DESCRYPT"
 iv = bytes([0]*8)
-k = des(key, ECB, iv, pad=None, padmode=PAD_PKCS5)
+#k = des(key, ECB, iv, pad=None, padmode=PAD_PKCS5)		# Electronic Codebook (ECB) mode decryption
+k = des(key, CBC, iv, pad=None, padmode=PAD_PKCS5)		# Cipher Block Chaining (CBC) mode decryption
+print("Message:\t\t", message)
 
 
 # Alice sending the encrypted message
@@ -33,6 +38,7 @@ print("Encrypted: \t\t", cipher[8:16])
 
 
 # Bob modidying the encrypted message (cipher text)
+# changine 1 bit in a block destroys the message
 cipher = modify(cipher)
 print("Encrypted (mod): \t", cipher[0:8])
 print("Encrypted (mod): \t", cipher[8:16])
