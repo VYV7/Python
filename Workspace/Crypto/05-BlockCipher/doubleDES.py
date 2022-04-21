@@ -7,23 +7,7 @@
 from pyDes import *
 import random
 
-# #############################################################################
-# changine 1 bit in a block destroys the message in ECB mode
-def modify(cipher):
-    mod = [0] * len(cipher)
-    #mod[10] = ord(" ") ^ ord("1")
-    #mod[11] = ord(" ") ^ ord("0")
-    #mod[10] = ord("1") ^ ord("0")
-    mod[8] = ord("G") ^ ord("T")
-    return bytes(mod[i] ^ cipher[i] for i in range(len(cipher)))
-
-# #############################################################################
-
-
-#message = "Give Bob:  10$ and send them to him"
-message = "01234567"
-print("Message:\t", message)
-
+print("====================================================================")
 
 key_11 = random.randrange(0, 256)					# generate a random number 0-256
 key_1 = bytes([key_11, 0, 0, 0, 0, 0, 0, 0])		# create 8 byte key
@@ -42,18 +26,86 @@ k2 = des(key_2, ECB, iv, pad=None, padmode=PAD_PKCS5)		# Electronic Codebook (EC
 
 
 # Alice sending the encrypted message
-cipher = k1.encrypt(k2.encrypt(message))					# double encryption
+print("Alice")
+
+message = "01234567"
+print("Message:\t", message)
+
+cipher = k1.encrypt(k2.encrypt(message))			# double encryption (cipher2)
 print("Key 11:\t", key_11)
 print("Key 21:\t", key_21)
-print("\nEncrypted:\n", cipher)
+print("Encrypted:\n", cipher)
 
 
 
 # Bob: decrypted message
-decMsg = k2.decrypt(k1.decrypt(cipher))
+print("\nBob")
+decMsg = k2.decrypt(k1.decrypt(cipher))				# double decryption
 print("Decrypted:\n", decMsg)
 
 
-#Eve's attack on Double DES
 
+# Eve's attack on Double DES
+# Eve knows the message and cipher 2
+# message -> cipher 1 -> cipher 2
+# 1:	message -> cipher 1a
+# 2:	cipher 1b <- cipher 2
+# 3:	(cipher 1a == cipher 1b) ? valid keys
+print("\nEve")
+lookup = {}											# lookup table to store encrypted msgs
+
+# create a dictionary with messages encrypted 
+# with all possible keys - list of ciphers 1a
+for i in range(256):
+	key = bytes([i, 0, 0, 0, 0, 0, 0, 0])
+	k = des(key, ECB, iv, pad=None, padmode=PAD_PKCS5)
+	lookup[k.encrypt(message)] = i					# each encrypted msg has a key assigned to it		
+
+# decrypt cipher with all possible keys (cipher 1b)
+# and check which one matches one of the 
+# encrypted messages in the lookup table
+# if it does, then she has the right 2 keys
+for i in range(256):
+	key = bytes([i, 0, 0, 0, 0, 0, 0, 0])
+	k = des(key, ECB, iv, pad=None, padmode=PAD_PKCS5)	
+	# decrypt cipher with each key and 
+	# check if it matches an enc msg in the lookup table
+	if k.decrypt(cipher) in lookup:					
+		print("Hacked Key 11: ", i)							# print the key used for cipher 1b <- cipher 2
+		print("Hacked Key 21: ", lookup[k.decrypt(cipher)])	# print the key used for message -> cipher 1a
+		
+		# create a set of keys
+		key_1e = bytes([i, 0, 0, 0, 0, 0, 0, 0])
+		key_2e = bytes([lookup[k.decrypt(cipher)], 0, 0, 0, 0, 0, 0, 0])
+		
+		k1e = des(key_1e, ECB, iv, pad=None, padmode=PAD_PKCS5)
+		k2e = des(key_2e, ECB, iv, pad=None, padmode=PAD_PKCS5)
+		
+		# decrypt cipher 2
+		decMsg2 = k2e.decrypt(k1e.decrypt(cipher))
+		print("Decrypted message:\n", decMsg2)
+		
+		break
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+print("====================================================================")
 
