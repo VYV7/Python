@@ -46,6 +46,7 @@ def isGenerator(g, p):
 			return False
 	return True
 			
+# find a generator for the prime number p
 def getGenerator(p):
 	for g in range(2, p):
 		if isGenerator(g, p):
