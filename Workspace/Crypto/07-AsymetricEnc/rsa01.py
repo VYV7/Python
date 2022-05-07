@@ -11,6 +11,11 @@ equvalent system was developed by GCHQ in 1973 (made public in 1997)
 -	prime numbers are kept secret
 -	messages can be encrypted by anyone and decrypted by the person
 	who knows the prime numbers.
+
+RSA is deterministic algorith. The same message with result in the same cipher. 
+To fix that padding is implemented. A random structure is added to m.
+Integer factorisation is a big problem.
+
 """
 #==============================================================================	
 import math
@@ -49,6 +54,12 @@ def getD(e, lambda_n):
 		if d*e % lambda_n == 1:
 			return d
 	return False
+	
+# 
+def factor(n):
+	for p in range(2, n):
+		if n % p == 0:
+			return p, n//p
 	
 #==============================================================================					
 print("Key generation")
@@ -104,13 +115,41 @@ print("Secret key (d):", d)
 print("----------------------------------")
 print("Bob")
 m = 117
-print("message: ", m)
+print("\tmessage: ", m)
 c = m**e % n			# create cipher
-print("cipher: ", c)
+print("\tcipher: ", c)
+
+
+print("\nEve")
+print("\tEve knows:")
+print("\tPublic key (e, n): ", e, n)
+print("\tEncrypted cipher: ", c)
+print("\n\tEve calculated:")
+eve_p, eve_q = factor(n)				# if you can factor then you can break the cipher!!!
+print("\tFactors: ", p, q)
+eve_lambda_n = lcm(p-1, q-1)
+print("\tLambda: ", eve_lambda_n)
+eve_d = getD(e, lambda_n)
+print("\tSecret exponent: ", eve_d)
+eve_m = c**d % n
+print("\tDecrypted message: ", eve_m)
+
 
 print("\nAlice")
 mDec = c**d % n
-print("Decrypted cipher: ", mDec)
+print("\tDecrypted cipher: ", mDec)
 
+print("----------------------------------")
+print("Incorrect use of RSA")
+print("Bob sends message to Alice - each byte encrypted using the same key")
+print("This can be hacked using the letter frequency method")
+message = "Alice is awesome"
+for m_c in message:
+	c = ord(m_c)**e % n
+	print(c, " ")
+	
 
 print("=============================================================")
+
+
+
