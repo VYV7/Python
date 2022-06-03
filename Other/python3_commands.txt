@@ -1,0 +1,5 @@
+Compile, dont run
+python3 -m py_compile source.py
+
+Compile, don't run (human readable)
+python3 -m dis source.py
