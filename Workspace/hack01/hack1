@@ -1,0 +1,17 @@
+import os.path
+
+print('===========================================================')
+#maek sure the file exists
+if os.path.exists( r'/Users/piotrszwajda/Courses/Python/Workspace/hack01/test.txt'):
+	print('The file exists')
+	os.chdir('/Users/piotrszwajda/Courses/Python/Workspace/hack01')
+else:
+	print('The file does not exist')
+
+print('Current working directory: ', os.getcwd())
+
+
+file = open("test.txt", "rt")
+print(file)
+
+print('===========================================================')
